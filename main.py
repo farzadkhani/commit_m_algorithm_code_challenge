@@ -5,39 +5,52 @@ def is_within_bounds(grid, x, y):
     return 0 <= x < len(grid) and 0 <= y < len(grid[0])
 
 
-def build_batch(x, y, grid):
+def build_batch(x, y, grid, instructions):
     """
     Build a batch of apartments in the grid.
     """
     if is_within_bounds(grid, x, y):
         grid[x][y] = "b"
+        instructions.append(f"{x} {y} b")
     else:
         return grid
     if is_within_bounds(grid, x + 1, y + 1):
         grid[x + 1][y + 1] = "r"
+        instructions.append(f"{x+1} {y+1} r")
         grid[x][y] = "x"
+        instructions.append(f"{x} {y} x")
         grid[x][y] = "g"
+        instructions.append(f"{x} {y} g")
     else:
         if is_within_bounds(grid, x, y + 1):
             grid[x][y + 1] = "r"
+            instructions.append(f"{x} {y+1} r")
             grid[x][y] = "x"
+            instructions.append(f"{x} {y} x")
             grid[x][y] = "g"
+            instructions.append(f"{x} {y} g")
         else:
             if is_within_bounds(grid, x + 1, y):
                 grid[x + 1][y] = "r"
+                instructions.append(f"{x+1} {y} r")
                 grid[x][y] = "x"
+                instructions.append(f"{x} {y} x")
                 grid[x][y] = "g"
+                instructions.append(f"{x} {y} g")
             else:
                 grid[x][y] = "x"
+                instructions.append(f"{x} {y} x")
                 grid[x][y] = "r"
+                instructions.append(f"{x} {y} r")
     for i in range(x, x + 3):
         for j in range(y, y + 3):
             if is_within_bounds(grid, i, j) and grid[i][j] == "0":
                 grid[i][j] = "g"
-    return grid
+                instructions.append(f"{i} {j} g")
+    return grid, instructions
 
 
-def build_apartments(m, n):
+def build_apartments(n, m):
     """
     # Algorithm Challenge
 
@@ -113,15 +126,20 @@ def build_apartments(m, n):
 
     # Generate a grid with all zeros
     grid = [["0" for _ in range(n)] for _ in range(m)]
+    instructions = []
 
     # Build apartments in the grid with batch of 3
     for item in range(0, n, 3):
         for i in range(0, m, 3):
-            grid = build_batch(i, item, grid)
+            build_batch(i, item, grid, instructions)
+            # instructions = instructions + instructions_
 
+    for item in instructions:
+        print(item)
+    print("--")
     for item in grid:
         print(" ".join(item))
 
 
 if __name__ == "__main__":
-    build_apartments(5, 7)
+    build_apartments(4, 10)
